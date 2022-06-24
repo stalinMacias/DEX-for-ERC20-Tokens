@@ -520,7 +520,7 @@ contract('DEX', (accounts) => {
     })
 
     // Tests to validate the createMarketOrder() to create SELL Market Orders!
-    it("Create two SELL Market Order that will match different orders from the BUY Order from the Order Book" , async () => {
+    it.only("Create two SELL Market Order that will match different orders from the BUY Order from the Order Book" , async () => {
         await dex.deposit(hemiSymbol,amount,{from: trader1});
         await dex.deposit(daiSymbol,amount,{from: trader2});
 
@@ -546,6 +546,7 @@ contract('DEX', (accounts) => {
 
         assert(trader2Balances[0] == web3.utils.toWei('50'), "The balance of HEMI Tokens for trader2 must be 50 HEMIs after taking all the available liquidity from the SELL orders[]")
         assert(trader2Balances[1] == web3.utils.toWei('500'), "The balance of DAI Tokens for trader2 must be 500 DAIs after selling 50 Hemis at a price of 10 DAIs each HEMI")
+        
         
         // Trader2 creates the second limit order to BUY 10 HEMI Tokens at a fixed price of 20 DAIs per each HEMI
         await dex.createLimitOrder(hemiSymbol,web3.utils.toWei('10'),20,OrderType.BUY,{from: trader2});
