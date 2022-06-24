@@ -172,7 +172,7 @@ contract DEX {
 
         // Algorithm to clean up orders that have been totally filled from the Order Book
         i = 0;
-        while(i < orders.length - 1){
+        while(i < orders.length){
             if(orders[i].amount == orders[i].filled) {
                 for(uint j = i; j < orders.length -1; j++) {
                     orders[j] = orders[j + 1];
