@@ -1,5 +1,4 @@
 const { expectRevert } = require('@openzeppelin/test-helpers');
-const { web3 } = require('@openzeppelin/test-helpers/src/setup');
 
 // Get the contract's artifacts of the ERC20 Tokens
 const DAI = artifacts.require('DAI');
