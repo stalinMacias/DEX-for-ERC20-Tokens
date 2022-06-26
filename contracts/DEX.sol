@@ -146,7 +146,6 @@ contract DEX {
             uint matched = (remaining > available ? available : remaining);
             remaining = remaining.sub(matched);
             orders[i].filled = orders[i].filled.add(matched);
-            emit Trade(nextTradeId, orders[i].orderId, orders[i].symbol, orders[i].orderType, msg.sender, orders[i].trader, matched, orders[i].price, (orders[i].price.mul(matched)), block.timestamp);
 
             if(_orderType == OrderType.SELL) {
                 // For the user that created the Marker Order - userInitiator
@@ -166,6 +165,9 @@ contract DEX {
                 tokenBalances[orders[i].trader][_symbol] = tokenBalances[orders[i].trader][_symbol].sub(matched);
                 tokenBalances[orders[i].trader][DAI] = tokenBalances[orders[i].trader][DAI].add(matched.mul(orders[i].price));
             }
+            // Trade event should be emitted after the tokenBalances were updated, if an error occurs while updating the balances, the entire transaction must be reverted, and that means that the Trade was actually not executed!
+            emit Trade(nextTradeId, orders[i].orderId, orders[i].symbol, orders[i].orderType, msg.sender, orders[i].trader, matched, orders[i].price, (orders[i].price.mul(matched)), block.timestamp);
+            
             nextTradeId = nextTradeId.add(1);
             i = i.add(1);
         }

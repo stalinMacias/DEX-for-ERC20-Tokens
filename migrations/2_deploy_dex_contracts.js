@@ -63,8 +63,101 @@ module.exports = async function(deployer) {
     );
 
     
-    //
+    // Seeding Orders
+    const increaseTime = async (seconds) => {
+        await web3.currentProvider.send({
+            jsonrpc: '2.0',
+            method: 'evm_increaseTime',
+            params: [seconds],
+            id: 0,
+        }, () => {});
+        await web3.currentProvider.send({
+            jsonrpc: '2.0',
+            method: 'evm_mine',
+            params: [],
+            id: 0,
+        }, () => {});
+    }
 
+    // Creating trades
+
+    const OrderType = {
+        BUY : 0,
+        SELL : 1
+    }
+
+    // initially, each Trader has 1k of each Token 
+    await dexContract.createLimitOrder(hemiSymbol,web3.utils.toWei('10'),5,OrderType.SELL, {from: trader2})
+    await dexContract.createMarketOrder(hemiSymbol,web3.utils.toWei('10'),OrderType.BUY, {from: trader1})
+    increaseTime(1);
+
+    await dexContract.createLimitOrder(hemiSymbol,web3.utils.toWei('5'),10,OrderType.SELL, {from: trader1})
+    await dexContract.createMarketOrder(hemiSymbol,web3.utils.toWei('5'),OrderType.BUY, {from: trader3})
+    increaseTime(1);
+
+    await dexContract.createLimitOrder(hemiSymbol,web3.utils.toWei('7'),8,OrderType.SELL, {from: trader3})
+    await dexContract.createMarketOrder(hemiSymbol,web3.utils.toWei('7'),OrderType.BUY, {from: trader2})
+    increaseTime(1);
+
+    await dexContract.createLimitOrder(hemiSymbol,web3.utils.toWei('15'),12,OrderType.SELL, {from: trader4})
+    await dexContract.createMarketOrder(hemiSymbol,web3.utils.toWei('15'),OrderType.BUY, {from: trader1})
+    increaseTime(1);
+
+    await dexContract.createLimitOrder(tetraSymbol,web3.utils.toWei('3'),15,OrderType.SELL, {from: trader1})
+    await dexContract.createMarketOrder(tetraSymbol,web3.utils.toWei('3'),OrderType.BUY, {from: trader4})
+    increaseTime(1);
+
+    await dexContract.createLimitOrder(tetraSymbol,web3.utils.toWei('20'),9,OrderType.SELL, {from: trader2})
+    await dexContract.createMarketOrder(tetraSymbol,web3.utils.toWei('20'),OrderType.BUY, {from: trader4})
+    increaseTime(1);
+
+    await dexContract.createLimitOrder(tetraSymbol,web3.utils.toWei('10'),20,OrderType.SELL, {from: trader1})
+    await dexContract.createMarketOrder(tetraSymbol,web3.utils.toWei('10'),OrderType.BUY, {from: trader3})
+    increaseTime(1);
+
+    await dexContract.createLimitOrder(tetraSymbol,web3.utils.toWei('50'),5,OrderType.SELL, {from: trader3})
+    await dexContract.createMarketOrder(tetraSymbol,web3.utils.toWei('50'),OrderType.BUY, {from: trader1})
+    increaseTime(1);
+
+    // Creating limit orders to fill up the Order Book
+    // SELL Limit Orders for HEMI Token
+    await dexContract.createLimitOrder(hemiSymbol,web3.utils.toWei('10'),10,OrderType.SELL, {from: trader1})
+    await dexContract.createLimitOrder(hemiSymbol,web3.utils.toWei('5'),5,OrderType.SELL, {from: trader2})
+    await dexContract.createLimitOrder(hemiSymbol,web3.utils.toWei('15'),25,OrderType.SELL, {from: trader3})
+    await dexContract.createLimitOrder(hemiSymbol,web3.utils.toWei('25'),5,OrderType.SELL, {from: trader4})
+
+    // BUY Limit Orders for HEMI Token
+    await dexContract.createLimitOrder(hemiSymbol,web3.utils.toWei('5'),10,OrderType.BUY, {from: trader4})
+    await dexContract.createLimitOrder(hemiSymbol,web3.utils.toWei('15'),5,OrderType.BUY, {from: trader3})
+    await dexContract.createLimitOrder(hemiSymbol,web3.utils.toWei('15'),20,OrderType.BUY, {from: trader2})
+    await dexContract.createLimitOrder(hemiSymbol,web3.utils.toWei('15'),15,OrderType.BUY, {from: trader1})
+
+    // SELL Limit Orders for TETRA Token
+    await dexContract.createLimitOrder(tetraSymbol,web3.utils.toWei('10'),10,OrderType.SELL, {from: trader1})
+    await dexContract.createLimitOrder(tetraSymbol,web3.utils.toWei('5'),5,OrderType.SELL, {from: trader2})
+    await dexContract.createLimitOrder(tetraSymbol,web3.utils.toWei('15'),25,OrderType.SELL, {from: trader3})
+    await dexContract.createLimitOrder(tetraSymbol,web3.utils.toWei('25'),5,OrderType.SELL, {from: trader4})
+
+    // BUY Limit Orders for TETRA Token
+    await dexContract.createLimitOrder(tetraSymbol,web3.utils.toWei('5'),10,OrderType.BUY, {from: trader4})
+    await dexContract.createLimitOrder(tetraSymbol,web3.utils.toWei('15'),5,OrderType.BUY, {from: trader3})
+    await dexContract.createLimitOrder(tetraSymbol,web3.utils.toWei('15'),20,OrderType.BUY, {from: trader2})
+    await dexContract.createLimitOrder(tetraSymbol,web3.utils.toWei('15'),15,OrderType.BUY, {from: trader1})
+
+
+    const sellLimitOrdersHemi = await dexContract.getOrders(hemiSymbol,OrderType.SELL);
+    const buyLimitOrdersHemi = await dexContract.getOrders(hemiSymbol,OrderType.BUY);
+
+    const sellLimitOrdersTetra = await dexContract.getOrders(tetraSymbol,OrderType.SELL);
+    const buyLimitOrdersTetra = await dexContract.getOrders(tetraSymbol,OrderType.BUY);
+
+    /*
+    console.log("sellLimitOrdersHemi :",sellLimitOrdersHemi)
+    console.log("buyLimitOrdersHemi :",buyLimitOrdersHemi)
+    console.log("sellLimitOrdersTetra :",sellLimitOrdersTetra)
+    console.log("buyLimitOrdersTetra :",buyLimitOrdersTetra)
+    */
+    
     
   };
   
