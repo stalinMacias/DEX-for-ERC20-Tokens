@@ -1,24 +1,22 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import { getWeb3, getAccount , getNetworkId, getDexContractInstance, getTokensContractInstances } from './utils';
 
 function App() {
+  const text = async () => {
+    const web3 = await getWeb3();
+    console.log(await getAccount())
+    console.log(await getDexContractInstance(web3))
+    console.log(await getTokensContractInstances(web3))
+    return(
+      <p> hello </p>
+    )
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      {text()}
     </div>
+
   );
 }
 
