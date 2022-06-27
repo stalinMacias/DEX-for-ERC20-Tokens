@@ -1,20 +1,15 @@
 import React from 'react';
-import { getWeb3, getAccount , getNetworkId, getDexContractInstance, getTokensContractInstances } from './utils';
 
-function App() {
-  const text = async () => {
-    const web3 = await getWeb3();
-    console.log(await getAccount())
-    console.log(await getDexContractInstance(web3))
-    console.log(await getTokensContractInstances(web3))
-    return(
-      <p> hello </p>
-    )
-  }
+function App({web3,account,dexContract,tokensContracts}) {
+  
+  console.log("Hello from the App component")
+  console.log("web3 object: ", web3);
+  console.log("account object: ", account);
+  console.log("dexContract object: ", dexContract);
+  console.log("tokensContracts: ", tokensContracts);
 
   return (
     <div>
-      {text()}
     </div>
 
   );
