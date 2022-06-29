@@ -3,7 +3,7 @@ import Dropdown from "./Dropdown";
 
 function Header({user,tokens,dexContract,selectToken}) {
     return(
-        <Header id="header" className="card">
+        <header id="header" className="card">
             <div className="row">
                 <div className="col-sm-3 flex">
                     <Dropdown
@@ -21,10 +21,13 @@ function Header({user,tokens,dexContract,selectToken}) {
                 <div className="col-sm-9">
                     <h1 className="header-title">
                         Dex - <span className="contract-address">Contract Address: </span> <span className="address">{dexContract.options.address}</span>
+                    </h1 >
+                    <h1 className="header-title">
+                        <span className="contract-address">{user.selectedToken.symbol} token address: </span> <span className="address">{user.selectedToken.tokenAddress}</span>
                     </h1>
                 </div>
             </div>
-        </Header>
+        </header>
     )
 }
 
