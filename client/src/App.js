@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Header from './Header';
 import Wallet from './Wallet';
+import NewOrder from './NewOrder';
 
 function App({ web3, account, dexContract, tokensContracts }) {
   /*
@@ -86,6 +87,14 @@ function App({ web3, account, dexContract, tokensContracts }) {
     setTotalTokensInDex(totalTokensInDex);
   }
 
+  const createMarketOrder = async(amount,side) => {
+    await dexContract.methods.createMarketOrder(web3.utils.fromAscii(user.selectedToken.symbol),web3.utils.toWei(amount),side).send({ from: user.account});
+  }
+
+  const createLimitOrder = async(amount,price,side) => {
+    await dexContract.methods.createLimitOrder(web3.utils.fromAscii(user.selectedToken.symbol),web3.utils.toWei(amount),price,side).send({ from: user.account});
+  }
+
   useEffect(() => {
     const init = async () => {
       console.log("dexContract object inside the useEffect: ", dexContract);
@@ -138,6 +147,12 @@ function App({ web3, account, dexContract, tokensContracts }) {
                 deposit={deposit}
                 withdraw={withdraw}
               />
+              {user.selectedToken.symbol !== 'DAI' ? (
+                <NewOrder 
+                  createMarketOrder={createMarketOrder}
+                  createLimitOrder={createLimitOrder}
+                />
+              ) : null}
             </div>
           </div>
         </main>

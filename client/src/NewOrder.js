@@ -2,12 +2,12 @@ import React, { useState } from "react";
 
 function NewOrder({ createMarketOrder, createLimitOrder }) {
     const TYPE = {
-        MARKET,
-        LIMIT
+        MARKET: 'MARKET',
+        LIMIT: 'LIMIT'
     }
     const SIDE = {
-        BUY,
-        SELL
+        BUY: 0,
+        SELL: 1
     }
 
     const [order, setOrder] = useState({
