@@ -2,6 +2,12 @@ import React, { useState, useEffect } from 'react';
 import Header from './Header';
 import Wallet from './Wallet';
 import NewOrder from './NewOrder';
+import AllOrders from './AllOrders';
+
+const SIDE = {
+  BUY: 0,
+  SELL: 1
+}
 
 function App({ web3, account, dexContract, tokensContracts }) {
   /*
@@ -14,6 +20,7 @@ function App({ web3, account, dexContract, tokensContracts }) {
   //console.log("tokensContracts: ", tokensContracts);
 
   const [tokens, setTokens] = useState([]);
+
   const [user, setUser] = useState({
     account: undefined,
     balances: {
@@ -22,19 +29,28 @@ function App({ web3, account, dexContract, tokensContracts }) {
     },
     selectedToken: undefined
   })
-  const[totalTokensInDex, setTotalTokensInDex] = useState(0);
 
-  const selectToken = async(token) => {
-    // Update the balances in the state variables
-    const balances = await getBalances(user.account,token);
-    setUser(user => ({...user, balances, selectedToken: token}));
-    
-    const totalTokensInDex = await getTotalTokensInDex(token);
+  const [totalTokensInDex, setTotalTokensInDex] = useState(0);
+
+  const [orders, setOrders] = useState({
+    buy: [],
+    sell: []
+  })
+
+  const selectToken = async (token) => {
+    const [balances,totalTokensInDex,orders] = await Promise.all([
+      getBalances(user.account, token),
+      getTotalTokensInDex(token),
+      getOrders(token)
+    ])
+
+    // Update the state variables
+    setUser(user => ({ ...user, balances, selectedToken: token }));
     setTotalTokensInDex(totalTokensInDex);
-    //setUser({ ...user, selectedToken: token })
+    setOrders(orders)
   }
 
-  const getTotalTokensInDex = async(token) => {
+  const getTotalTokensInDex = async (token) => {
     let totalTokensInDex = await dexContract.methods.getTotalTokensInDex(web3.utils.fromAscii(token.symbol)).call();
     totalTokensInDex = web3.utils.fromWei(totalTokensInDex)
     console.log("Total tokens in the DEX Contract: ", totalTokensInDex);
@@ -42,17 +58,14 @@ function App({ web3, account, dexContract, tokensContracts }) {
   }
 
   const getBalances = async (account, token) => {
-    console.log("Entro al getBalances()");
     let tokenDex = await dexContract.methods.tokenBalances(account, web3.utils.fromAscii(token.symbol)).call();
     let tokenWallet = await tokensContracts[token.symbol].methods.balanceOf(account).call();
 
-    console.log("Account: :", account, " has, in the tokenDex: ", tokenDex)
-    console.log("Account: :", account, " has, in the tokenWallet: ", tokenWallet)
-
-    console.log("Token contract: ", tokensContracts[token.symbol].options.address)
-    console.log("Token selected: ",  token.symbol)
-
-    console.log("DEX Contract address:" , dexContract.options.address);
+    console.log("Token selected: ", token.symbol)
+    //console.log("Account: :", account, " has, in the tokenDex: ", tokenDex)
+    //console.log("Account: :", account, " has, in the tokenWallet: ", tokenWallet)
+    //console.log("Token contract: ", tokensContracts[token.symbol].options.address)
+    //console.log("DEX Contract address:", dexContract.options.address);
 
     tokenDex = web3.utils.fromWei(tokenDex)
     tokenWallet = web3.utils.fromWei(tokenWallet)
@@ -61,38 +74,65 @@ function App({ web3, account, dexContract, tokensContracts }) {
   }
 
   // allow the user to send tokens from its Wallet to the DEX Contract
-  const deposit = async(amount) => {
+  const deposit = async (amount) => {
     console.log("Debugging the deposit function")
     //console.log(tokensContracts[user.selectedToken.symbol])
-    await tokensContracts[user.selectedToken.symbol].methods.approve(dexContract.options.address,web3.utils.toWei(amount)).send({from: user.account});
-    await dexContract.methods.deposit(web3.utils.fromAscii(user.selectedToken.symbol),web3.utils.toWei(amount)).send({from: user.account});
+    await tokensContracts[user.selectedToken.symbol].methods.approve(dexContract.options.address, web3.utils.toWei(amount)).send({ from: user.account });
+    await dexContract.methods.deposit(web3.utils.fromAscii(user.selectedToken.symbol), web3.utils.toWei(amount)).send({ from: user.account });
 
     // Update the balances in the state variables
-    const balances = await getBalances(user.account,user.selectedToken);
-    setUser(user => ({...user, balances}));
+    const balances = await getBalances(user.account, user.selectedToken);
+    setUser(user => ({ ...user, balances }));
 
     const totalTokensInDex = await getTotalTokensInDex(user.selectedToken);
     setTotalTokensInDex(totalTokensInDex);
   }
 
   // allow the user to send tokens from the DEX Contract to its wallet
-  const withdraw = async(amount) => {
-    await dexContract.methods.withdraw(web3.utils.fromAscii(user.selectedToken.symbol), web3.utils.toWei(amount)).send({from: user.account});
+  const withdraw = async (amount) => {
+    await dexContract.methods.withdraw(web3.utils.fromAscii(user.selectedToken.symbol), web3.utils.toWei(amount)).send({ from: user.account });
 
     // Update the balances in the state variables
-    const balances = await getBalances(user.account,user.selectedToken);
-    setUser(user => ({...user, balances}));
+    const balances = await getBalances(user.account, user.selectedToken);
+    setUser(user => ({ ...user, balances }));
 
     const totalTokensInDex = await getTotalTokensInDex(user.selectedToken);
     setTotalTokensInDex(totalTokensInDex);
   }
 
-  const createMarketOrder = async(amount,side) => {
-    await dexContract.methods.createMarketOrder(web3.utils.fromAscii(user.selectedToken.symbol),web3.utils.toWei(amount),side).send({ from: user.account});
+  const createMarketOrder = async (amount, side) => {
+    await dexContract.methods.createMarketOrder(web3.utils.fromAscii(user.selectedToken.symbol), web3.utils.toWei(amount), side).send({ from: user.account });
+    const orders = await getOrders(user.selectedToken)
+    setOrders(orders)
   }
 
-  const createLimitOrder = async(amount,price,side) => {
-    await dexContract.methods.createLimitOrder(web3.utils.fromAscii(user.selectedToken.symbol),web3.utils.toWei(amount),price,side).send({ from: user.account});
+  const createLimitOrder = async (amount, price, side) => {
+    await dexContract.methods.createLimitOrder(web3.utils.fromAscii(user.selectedToken.symbol), web3.utils.toWei(amount), price, side).send({ from: user.account });
+    const orders = await getOrders(user.selectedToken);
+    setOrders(orders)
+  }
+
+  const getOrders = async (token) => {
+    const orders = await Promise.all([
+      dexContract.methods.getOrders(web3.utils.fromAscii(token.symbol), SIDE.BUY).call(),
+      dexContract.methods.getOrders(web3.utils.fromAscii(token.symbol), SIDE.SELL).call()
+    ])
+
+    // Update the format of the amount parameter from wei units to ETHERs units 
+    orders[0].map((order,i) => {
+      orders[0][i]['amount'] = web3.utils.fromWei(order.amount)
+      orders[0][i]['filled'] = web3.utils.fromWei(order.filled)
+    })
+
+    // Update the format of the amount parameter from wei units to ETHERs units 
+    orders[1].map((order,i) => {
+      orders[1][i]['amount'] = web3.utils.fromWei(order.amount)
+      orders[1][i]['filled'] = web3.utils.fromWei(order.filled)
+    })
+    
+    console.log("orders after updating the amount to ETHERs unit from WEI units: ", orders[1]);
+
+    return ({ buy: orders[0], sell: orders[1] })
   }
 
   useEffect(() => {
@@ -110,16 +150,19 @@ function App({ web3, account, dexContract, tokensContracts }) {
       }))
       setTokens(tokens);
 
-      const balances = await getBalances(account,tokens[0]);
+      const [balances,totalTokensInDex,orders] = await Promise.all([
+        getBalances(account, tokens[0]),
+        getTotalTokensInDex(tokens[0]),
+        getOrders(tokens[0])
+      ])
+
       setUser({
         account,
         balances,
         selectedToken: tokens[0]
       })
-
-      const totalTokensInDex = await getTotalTokensInDex(tokens[0]);
       setTotalTokensInDex(totalTokensInDex);
-
+      setOrders(orders)
     }
     init();
   }, [])
@@ -142,18 +185,25 @@ function App({ web3, account, dexContract, tokensContracts }) {
         <main className='container-fluid'>
           <div className='row'>
             <div className='col-sm-4 first-col'>
-              <Wallet 
+              <Wallet
                 user={user}
                 deposit={deposit}
                 withdraw={withdraw}
               />
               {user.selectedToken.symbol !== 'DAI' ? (
-                <NewOrder 
+                <NewOrder
                   createMarketOrder={createMarketOrder}
                   createLimitOrder={createLimitOrder}
                 />
               ) : null}
             </div>
+            {user.selectedToken.symbol !== 'DAI' ? (
+              <div className="col-sm-8">
+                <AllOrders 
+                  orders={orders}
+                />
+              </div>
+            ) : null}
           </div>
         </main>
 
