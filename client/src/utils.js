@@ -72,6 +72,9 @@ const getTokensContractInstances = async (web3) => {
     const tokens = await dexContractInstance.methods.getTokens().call();
     //console.log("List of tokens: ", tokens);    
     
+    // reduce() advanced JS method is used to map the original arrays of array onto an object of objects!
+    // The key of each objest is the name of the Token (in ascii format) and the key is the actual token contract instance!
+    // Like example: ---> tokensContracts:  {DAI: Contract, HEMI: Contract, TETRA: Contract}
     const tokenContracts = tokens.reduce((acc,token) => ({
         ...acc, [web3.utils.hexToUtf8(token.symbol)] : new web3.eth.Contract(ERC20Abi,token.tokenAddress)
     }),{})

@@ -90,6 +90,9 @@ contract DEX {
     function deposit(bytes32 _symbol, uint _amount) external onlyAllowedTokens(_symbol) {
         IERC20(tokens[_symbol].tokenAddress).transferFrom(msg.sender, address(this), _amount);
         tokenBalances[msg.sender][_symbol] = tokenBalances[msg.sender][_symbol].add(_amount);
+
+        // Update the total DEX Balance of tokens when a user Deposits tokens
+        tokenBalances[address(this)][_symbol] = tokenBalances[address(this)][_symbol].add(_amount);
     }
 
     function withdraw(bytes32 _symbol, uint _amount) external onlyAllowedTokens(_symbol) {
@@ -97,6 +100,9 @@ contract DEX {
         // Uodate user's token balance before transfering the tokens - Prevent reentrancy attacks
         tokenBalances[msg.sender][_symbol] = tokenBalances[msg.sender][_symbol].sub(_amount);
         IERC20(tokens[_symbol].tokenAddress).transfer(msg.sender,_amount);
+
+        // Update the total DEX Balance of tokens when a user Withdraws tokens
+        tokenBalances[address(this)][_symbol] = tokenBalances[address(this)][_symbol].sub(_amount);
     }
 
     function createLimitOrder(bytes32 _symbol, uint _amount, uint _price, OrderType _orderType) external validAmount(_amount) onlyAllowedTokens(_symbol) tokenIsNotDai(_symbol) {
@@ -200,6 +206,10 @@ contract DEX {
                 );
         }
         return _tokens;
+    }
+
+    function getTotalTokensInDex(bytes32 _symbol) external view returns(uint) {
+        return tokenBalances[address(this)][_symbol];
     }
     
 }
