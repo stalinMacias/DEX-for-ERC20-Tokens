@@ -1,7 +1,7 @@
 import React from "react";
 import Dropdown from "./Dropdown";
 
-function Header({user,tokens,dexContract,selectToken}) {
+function Header({user,tokens,dexContract,selectToken,totalTokensInDex}) {
     return(
         <header id="header" className="card">
             <div className="row">
@@ -24,6 +24,10 @@ function Header({user,tokens,dexContract,selectToken}) {
                     </h1 >
                     <h1 className="header-title">
                         <span className="contract-address">{user.selectedToken.symbol} token address: </span> <span className="address">{user.selectedToken.tokenAddress}</span>
+                    </h1>
+
+                    <h1 className="header-title">
+                        <span className="contract-address">{user.selectedToken.symbol} total tokens held in the DEX Contract: </span> <span className="address">{totalTokensInDex}</span>
                     </h1>
                 </div>
             </div>
