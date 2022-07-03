@@ -102,7 +102,11 @@ function App({ web3, account, dexContract, tokensContracts }) {
 
   const createMarketOrder = async (amount, side) => {
     await dexContract.methods.createMarketOrder(web3.utils.fromAscii(user.selectedToken.symbol), web3.utils.toWei(amount), side).send({ from: user.account });
-    const orders = await getOrders(user.selectedToken)
+    const [balances,orders] = await Promise.all([
+      getBalances(user.account, user.selectedToken),
+      getOrders(user.selectedToken)
+    ])
+    setUser(user => ({ ...user, balances }));
     setOrders(orders)
   }
 
