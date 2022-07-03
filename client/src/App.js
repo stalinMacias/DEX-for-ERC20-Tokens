@@ -62,8 +62,9 @@ function App({ web3, account, dexContract, tokensContracts }) {
   // allow the user to send tokens from its Wallet to the DEX Contract
   const deposit = async(amount) => {
     console.log("Debugging the deposit function")
-    await tokensContracts[user.selectedToken.symbol].methods.approve(dexContract.options.address,web3.utils.toWei(amount)).send({from: user,account});
-    await dexContract.methods.deposit(web3.utils.fromAscii(user.selectedToken.symbol)).send({from: user.account});
+    //console.log(tokensContracts[user.selectedToken.symbol])
+    await tokensContracts[user.selectedToken.symbol].methods.approve(dexContract.options.address,web3.utils.toWei(amount)).send({from: user.account});
+    await dexContract.methods.deposit(web3.utils.fromAscii(user.selectedToken.symbol),web3.utils.toWei(amount)).send({from: user.account});
 
     // Update the balances in the state variables
     const balances = await getBalances(user.account,user.selectedToken);
