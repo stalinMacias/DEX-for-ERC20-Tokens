@@ -1,7 +1,7 @@
 import React from "react";
 import Moment from 'react-moment';
 
-function AllOrders({ orders }) {
+function MyOrders({ orders }) {
 
   const renderList = (orders, side, className) => {
     return (
@@ -12,7 +12,7 @@ function AllOrders({ orders }) {
               <th colSpan='3'>{side}</th>
             </tr>
             <tr>
-              <th>amount</th>
+              <th>amount/filled</th>
               <th>price</th>
               <th>date</th>
             </tr>
@@ -20,7 +20,7 @@ function AllOrders({ orders }) {
           <tbody>
             {orders.map((order) => (
               <tr key={order.id}>
-                <td>{order.amount - order.filled}</td>
+                <td>{order.amount}/{order.filled}</td>
                 <td>{order.price}</td>
                 <td>
                   <Moment fromNow>{parseInt(order.date) * 1000}</Moment>
@@ -34,8 +34,8 @@ function AllOrders({ orders }) {
   }
 
   return (
-    <div className="card">
-      <h2 className="card-title">All orders</h2>
+    <div id="order-list" className="card">
+      <h2 className="card-title">My orders</h2>
       <div className="row">
         <div className="col-sm-6">
           {renderList(orders.buy, 'Buy', 'order-list-buy')}
@@ -48,4 +48,4 @@ function AllOrders({ orders }) {
   )
 }
 
-export default AllOrders;
+export default MyOrders;

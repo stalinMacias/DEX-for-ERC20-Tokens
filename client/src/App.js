@@ -134,7 +134,7 @@ function App({ web3, account, dexContract, tokensContracts }) {
       orders[1][i]['filled'] = web3.utils.fromWei(order.filled)
     })
     
-    console.log("orders after updating the amount to ETHERs unit from WEI units: ", orders[1]);
+    //console.log("orders after updating the amount to ETHERs unit from WEI units: ", orders[1]);
 
     return ({ buy: orders[0], sell: orders[1] })
   }
