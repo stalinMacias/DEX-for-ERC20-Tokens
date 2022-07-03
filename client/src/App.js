@@ -3,6 +3,7 @@ import Header from './Header';
 import Wallet from './Wallet';
 import NewOrder from './NewOrder';
 import AllOrders from './AllOrders';
+import MyOrders from './MyOrders';
 
 const SIDE = {
   BUY: 0,
@@ -205,6 +206,12 @@ function App({ web3, account, dexContract, tokensContracts }) {
               <div className="col-sm-8">
                 <AllOrders 
                   orders={orders}
+                />
+                <MyOrders
+                  orders={{
+                    buy: orders.buy.filter(order => order.trader.toLowerCase() === user.account.toLowerCase()),
+                    sell: orders.sell.filter(order => order.trader.toLowerCase() === user.account.toLowerCase()),
+                  }}
                 />
               </div>
             ) : null}
