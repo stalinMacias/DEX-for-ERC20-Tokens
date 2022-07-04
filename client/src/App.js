@@ -6,6 +6,30 @@ import AllOrders from './AllOrders';
 import MyOrders from './MyOrders';
 import AllTrades from './AllTrades';
 
+                            /*          *** TO-DO List ***
+                              - Update the format of the amount variable that is retrieved from the Trade event
+                                * The format is fetched in weis, but all the components are displaying ETHERS units.
+
+                                - Create & Integrate Three new components
+                                  * MyTrades component
+                                    - Will display only the trades of the current user
+
+                                  * MyDeposits component
+                                    - Will display all the deposits that the current user has done
+
+                                  * MyWithdraws component
+                                    - Will display all the withdraws that the current user has done
+
+
+                                        *** BUGs section ***
+                                - Find & Fix a known bug when displaying the AllTrades component
+                                  * Using the current logic, each time that the selected token is changed by the user, the trades state variables is cleaned up
+                                    - When the trades state variable is cleaned up, all the trades of the previous seleted token are wiped out, and the trades variables is set to an empty array
+                                    - The current approach to fetch events from the blockchain seems to only fetch new events, but not all the previous events that have already been emitted
+                                    - Find a way to fetch all the previous emitted events and initialize the trades state variable using those values.
+                                  * AllTrades component should display All the Trades that have been completed in the DEX, not only the new trades!
+                            */
+
 const SIDE = {
   BUY: 0,
   SELL: 1
@@ -55,7 +79,7 @@ function App({ web3, account, dexContract, tokensContracts }) {
     setOrders(orders)
 
     // Pending: Check how to keep the trades of the other tokens or how to re-fetch all the previous events when changing the selected token
-
+    // Read the bug section at the very beginning of this file !
     setTrades([]);
     listenToTrades(token)
     if(listener !== undefined) listener.unsubscribe();
