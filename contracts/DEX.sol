@@ -42,9 +42,9 @@ contract DEX {
     address public admin;
 
     event Trade(
-        uint indexed tradeId, 
+        uint tradeId, 
         uint orderId, 
-        bytes32 tokenSymbol, 
+        bytes32 indexed tokenSymbol, 
         OrderType _orderType, 
         address indexed userInitiator, 
         address indexed userFill, 
