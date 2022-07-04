@@ -4,6 +4,7 @@ import Wallet from './Wallet';
 import NewOrder from './NewOrder';
 import AllOrders from './AllOrders';
 import MyOrders from './MyOrders';
+import AllTrades from './AllTrades';
 
 const SIDE = {
   BUY: 0,
@@ -38,6 +39,9 @@ function App({ web3, account, dexContract, tokensContracts }) {
     sell: []
   })
 
+  const [trades, setTrades] = useState([]);
+  const [listener, setListener] = useState(undefined);
+
   const selectToken = async (token) => {
     const [balances,totalTokensInDex,orders] = await Promise.all([
       getBalances(user.account, token),
@@ -49,6 +53,12 @@ function App({ web3, account, dexContract, tokensContracts }) {
     setUser(user => ({ ...user, balances, selectedToken: token }));
     setTotalTokensInDex(totalTokensInDex);
     setOrders(orders)
+
+    // Pending: Check how to keep the trades of the other tokens or how to re-fetch all the previous events when changing the selected token
+
+    setTrades([]);
+    listenToTrades(token)
+    if(listener !== undefined) listener.unsubscribe();
   }
 
   const getTotalTokensInDex = async (token) => {
@@ -109,6 +119,7 @@ function App({ web3, account, dexContract, tokensContracts }) {
     ])
     setUser(user => ({ ...user, balances }));
     setOrders(orders)
+    listenToTrades(user.selectedToken)
   }
 
   const createLimitOrder = async (amount, price, side) => {
@@ -139,6 +150,22 @@ function App({ web3, account, dexContract, tokensContracts }) {
 
     return ({ buy: orders[0], sell: orders[1] })
   }
+  
+  const listenToTrades = async(token) => {
+    console.log("Listening to trades for: ", token.symbol);
+    const tradeIds = new Set();
+    const listener = dexContract.events.Trade({
+      filter: {tokenSymbol: web3.utils.fromAscii(token.symbol)},
+      fromBlock: 0
+    }).on('data', newTrade => {
+      if(tradeIds.has(newTrade.returnValues.tradeId)) return null;
+      tradeIds.add(newTrade.returnValues.tradeId);
+      //console.log("New Trade :" , newTrade)
+      setTrades(([...trades, newTrade.returnValues]))
+      console.log("Trades: ", trades);
+    })
+    setListener(listener);
+  }
 
   useEffect(() => {
     const init = async () => {
@@ -153,6 +180,9 @@ function App({ web3, account, dexContract, tokensContracts }) {
         ...token,
         symbol: web3.utils.hexToUtf8(token.symbol)
       }))
+
+      listenToTrades(tokens[0])
+
       setTokens(tokens);
 
       const [balances,totalTokensInDex,orders] = await Promise.all([
@@ -204,6 +234,9 @@ function App({ web3, account, dexContract, tokensContracts }) {
             </div>
             {user.selectedToken.symbol !== 'DAI' ? (
               <div className="col-sm-8">
+                <AllTrades
+                  trades={trades}
+                />
                 <AllOrders 
                   orders={orders}
                 />
