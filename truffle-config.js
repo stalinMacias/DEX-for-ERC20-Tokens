@@ -1,4 +1,9 @@
+require('dotenv').config();
 const path = require('path');
+const HDWalletProvider = require('@truffle/hdwallet-provider');
+const PRIVATE_KEYS = process.env.PRIVATE_KEYS || "" 
+const INFURA_API_KEY = process.env.INFURA_API_KEY || ""
+
 /**
  * Use this file to configure your truffle project. It's seeded with some
  * common settings for different networks and features like migrations,
@@ -48,6 +53,48 @@ module.exports = {
       port: 7545,            // Standard Ethereum port (default: none)
       network_id: "*",       // Any network (default: none)
     },
+    ////// SETUP Goerli USING THE INFO FROM THE .env file
+    goerli : { 
+      provider: function() { 
+        return new HDWalletProvider({ 
+            privateKeys: PRIVATE_KEYS.split(','), 
+            providerOrUrl: `https://goerli.infura.io/v3/${INFURA_API_KEY}`
+          }) 
+      }, 
+      gas: 5000000, 
+      gasPrice: 25000000000, 
+      network_id: 5
+    },
+    ////// SETUP Ropsten USING THE INFO FROM THE .env file
+    ropsten : { 
+      provider: function() { 
+        return new HDWalletProvider({ 
+            privateKeys: PRIVATE_KEYS.split(','), 
+            providerOrUrl: `https://ropsten.infura.io/v3/${INFURA_API_KEY}`
+          }) 
+      }, 
+      gas: 5000000, 
+      gasPrice: 25000000000, 
+      network_id: 3
+    },
+    ////// SETUP Rinkeby USING THE INFO FROM THE .env file
+    rinkeby : {
+      provider: function() {
+        return new HDWalletProvider({
+            privateKeys: PRIVATE_KEYS.split(','),
+            providerOrUrl: `wss://rinkeby.infura.io/ws/v3/${INFURA_API_KEY}`,
+            addressIndex: 0
+          })
+      },
+      gas: 5000000,
+      gasPrice: 25000000000,
+      network_id: 4,
+      skipDryRun: true,
+      confirmations: 5,
+      networkCheckTimeout: 1000000,
+      websocket: true,
+      timeoutBlocks: 200
+    }
     // Another network with more advanced options...
     // advanced: {
     // port: 8777,             // Custom port

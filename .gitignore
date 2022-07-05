@@ -12,6 +12,7 @@ lerna-debug.log
 .env
 .env.test
 .custom-env
+test_connections.js
 
 # cache files
 .yarn/cache
