@@ -1,6 +1,13 @@
 # DEX-for-ERC20-Tokens
 Fully DEX (Descentralized Exchange) to trade various ERC-20 Tokens
-## Deescription
+
+## Link to the application running in Netlify
+https://62c5bc4a908ea60616171f44--dex-multipletokens-stalin.netlify.app/
+### Contracts are deployed in the new two public testnets:
+* Goerli
+* Rinkeby
+
+## Description
 - This DEX is capable to trade ERC20 tokens that are in the whitelist of allowed tokens
 - The admin of the DEX is able to add ERC20 tokens to the allowed list of tokens to be traded
 - The traders can create Limit Orders and set a an specific price to trade their Tokens
