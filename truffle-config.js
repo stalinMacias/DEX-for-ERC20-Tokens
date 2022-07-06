@@ -58,19 +58,24 @@ module.exports = {
       provider: function() { 
         return new HDWalletProvider({ 
             privateKeys: PRIVATE_KEYS.split(','), 
-            providerOrUrl: `https://goerli.infura.io/v3/${INFURA_API_KEY}`
+            providerOrUrl: `wss://goerli.infura.io/ws/v3/${INFURA_API_KEY}`
           }) 
       }, 
       gas: 5000000, 
       gasPrice: 25000000000, 
-      network_id: 5
+      network_id: 5,
+      skipDryRun: true,
+      confirmations: 5,
+      networkCheckTimeout: 1000000,
+      websocket: true,
+      timeoutBlocks: 200
     },
     ////// SETUP Ropsten USING THE INFO FROM THE .env file
     ropsten : { 
       provider: function() { 
         return new HDWalletProvider({ 
             privateKeys: PRIVATE_KEYS.split(','), 
-            providerOrUrl: `https://ropsten.infura.io/v3/${INFURA_API_KEY}`
+            providerOrUrl: `https://ropsten.infura.io/ws/v3/${INFURA_API_KEY}`
           }) 
       }, 
       gas: 5000000, 

@@ -40437,6 +40437,80 @@
       "address": "0x96a41492f7C6f5d5A5DC29B96476caE8e06B8E54",
       "transactionHash": "0x42cf9fd8a98786667c9eddb0fd5ba7d78e913910293499bb08c69561d435b9c7"
     },
+    "5": {
+      "events": {
+        "0x67b5a1cffc6f430758db4127f49534d3aaf2c08b9ac9a53e3e291243806962e2": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "tradeId",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "orderId",
+              "type": "uint256"
+            },
+            {
+              "indexed": true,
+              "internalType": "bytes32",
+              "name": "tokenSymbol",
+              "type": "bytes32"
+            },
+            {
+              "indexed": false,
+              "internalType": "enum DEX.OrderType",
+              "name": "_orderType",
+              "type": "uint8"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "userInitiator",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "userFill",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "tokenAmount",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "pricePerToken",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "totalCost",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "timestamp",
+              "type": "uint256"
+            }
+          ],
+          "name": "Trade",
+          "type": "event"
+        }
+      },
+      "links": {},
+      "address": "0xb73F4a24cf0390c0fc596587807d7A2797C7d051",
+      "transactionHash": "0x24f1900029edcee8285d6990f23deb733dbc45f9193b10d1a7cc2701babbd593"
+    },
     "5777": {
       "events": {
         "0x67b5a1cffc6f430758db4127f49534d3aaf2c08b9ac9a53e3e291243806962e2": {
@@ -40513,7 +40587,7 @@
     }
   },
   "schemaVersion": "3.4.4",
-  "updatedAt": "2022-07-05T06:28:23.739Z",
+  "updatedAt": "2022-07-06T15:46:20.866Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",
